@@ -1271,3 +1271,26 @@
         .stats-cards { grid-template-columns: 1fr; }
         .search-bar { flex-direction: column; }
     }
+
+    .btn-view-pengaduan {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    margin-right: 10px;
+}
+
+.btn-view-pengaduan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-view-pengaduan i {
+    margin-right: 5px;
+}
