@@ -58,163 +58,11 @@ $list_query = mysqli_query($koneksi, "SELECT * FROM notifikasi ORDER BY tanggal 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 <title>Dashboard Admin - SIKOPAT</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-/* Style tambahan untuk modal detail notifikasi */
-.notif-item {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.notif-item:hover {
-    transform: translateX(5px);
-}
-
-.notif-item.unread {
-    background-color: #eff6ff;
-    border-left: 3px solid #667eea;
-}
-
-.notif-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s ease;
-}
-
-.notif-modal-content {
-    background-color: #ffffff;
-    margin: 8% auto;
-    padding: 0;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.3s ease;
-}
-
-.notif-modal-header {
-    padding: 25px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.notif-modal-header h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.notif-modal-header h3 i {
-    margin-right: 10px;
-}
-
-.notif-modal-close {
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.notif-modal-close:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: rotate(90deg);
-}
-
-.notif-modal-body {
-    padding: 30px;
-}
-
-.notif-detail-time {
-    color: #64748b;
-    font-size: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-}
-
-.notif-detail-time i {
-    margin-right: 8px;
-    color: #667eea;
-}
-
-.notif-detail-message {
-    line-height: 1.8;
-    font-size: 15px;
-    color: #1e293b;
-}
-
-.notif-detail-message p {
-    margin: 0;
-}
-
-.notif-modal-footer {
-    padding: 20px 30px;
-    background-color: #f8fafc;
-    border-radius: 0 0 12px 12px;
-    text-align: right;
-}
-
-.btn-close-modal {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.btn-close-modal:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.btn-close-modal i {
-    margin-right: 5px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideDown {
-    from { 
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to { 
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-</style>
 </head>
 <body>
 
@@ -267,8 +115,7 @@ $list_query = mysqli_query($koneksi, "SELECT * FROM notifikasi ORDER BY tanggal 
                         mysqli_data_seek($list_query, 0);
                         while($notif = mysqli_fetch_assoc($list_query)): 
                         ?>
-                            <div class="notif-item <?= $notif['status'] == 'baru' ? 'unread' : '' ?>" 
-                                 onclick="showNotifDetail(<?= $notif['id'] ?>, '<?= htmlspecialchars(addslashes($notif['pesan'])) ?>', '<?= date('d/m/Y H:i', strtotime($notif['tanggal'])) ?>')">
+                            <div class="notif-item">
                                 <p><?= htmlspecialchars($notif['pesan']) ?></p>
                                 <small><i class="fa-regular fa-clock"></i> <?= date('d/m/Y H:i', strtotime($notif['tanggal'])) ?></small>
                             </div>
@@ -337,30 +184,6 @@ $list_query = mysqli_query($koneksi, "SELECT * FROM notifikasi ORDER BY tanggal 
     </div>
 </div>
 
-<!-- Modal Detail Notifikasi -->
-<div class="notif-modal" id="notifModal">
-    <div class="notif-modal-content">
-        <div class="notif-modal-header">
-            <h3><i class="fa-solid fa-bell"></i> Detail Notifikasi</h3>
-            <span class="notif-modal-close" onclick="closeNotifModal()">&times;</span>
-        </div>
-        <div class="notif-modal-body">
-            <div class="notif-detail-time">
-                <i class="fa-regular fa-clock"></i> 
-                <span id="notifDetailTime"></span>
-            </div>
-            <div class="notif-detail-message">
-                <p id="notifDetailMessage"></p>
-            </div>
-        </div>
-        <div class="notif-modal-footer">
-            <button class="btn-close-modal" onclick="closeNotifModal()">
-                <i class="fa-solid fa-times"></i> Tutup
-            </button>
-        </div>
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Logout Confirmation
@@ -398,48 +221,6 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Tampilkan detail notifikasi
-function showNotifDetail(notifId, pesan, tanggal) {
-    document.getElementById('notifDetailTime').textContent = tanggal;
-    document.getElementById('notifDetailMessage').textContent = pesan;
-    document.getElementById('notifModal').style.display = 'block';
-    
-    // Tandai sebagai sudah dibaca
-    markAsRead(notifId);
-    
-    // Tutup dropdown notifikasi
-    document.getElementById('notifDropdown').classList.remove('show');
-}
-
-// Tutup modal detail notifikasi
-function closeNotifModal() {
-    document.getElementById('notifModal').style.display = 'none';
-}
-
-// Tandai notifikasi sebagai sudah dibaca
-function markAsRead(notifId) {
-    fetch('mark_notif_read.php?id=' + notifId)
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                // Update badge notifikasi
-                const badge = document.querySelector('.notif-badge');
-                if(badge) {
-                    let count = parseInt(badge.textContent);
-                    count--;
-                    if(count > 0) {
-                        badge.textContent = count;
-                    } else {
-                        badge.remove();
-                    }
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-
 // Tandai semua notifikasi sudah dibaca
 function markAllRead(event) {
     event.preventDefault();
@@ -458,21 +239,6 @@ function markAllRead(event) {
         }
     });
 }
-
-// Tutup modal saat klik di luar modal
-window.onclick = function(event) {
-    const modal = document.getElementById('notifModal');
-    if (event.target == modal) {
-        closeNotifModal();
-    }
-}
-
-// Tutup modal dengan tombol ESC
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeNotifModal();
-    }
-});
 
 // Chart pemasukan dengan styling modern
 const ctx1 = document.getElementById('incomeChart');
