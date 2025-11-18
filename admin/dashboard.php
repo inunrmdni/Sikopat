@@ -109,24 +109,26 @@ $list_query = mysqli_query($koneksi, "SELECT * FROM notifikasi ORDER BY tanggal 
                     <h4><i class="fa-solid fa-bell"></i> Notifikasi</h4>
                     <a href="#" class="mark-read" onclick="markAllRead(event)">Tandai sudah dibaca</a>
                 </div>
-                <div class="notif-body">
-                    <?php if($total_notif > 0): ?>
-                        <?php 
-                        mysqli_data_seek($list_query, 0);
-                        while($notif = mysqli_fetch_assoc($list_query)): 
-                        ?>
-                            <div class="notif-item">
-                                <p><?= htmlspecialchars($notif['pesan']) ?></p>
-                                <small><i class="fa-regular fa-clock"></i> <?= date('d/m/Y H:i', strtotime($notif['tanggal'])) ?></small>
+                    <div class="notif-body">
+                        <?php if($total_notif > 0): ?>
+                            <?php 
+                            mysqli_data_seek($list_query, 0);
+                            while($notif = mysqli_fetch_assoc($list_query)): 
+                                $pengaduan_id = isset($notif['pengaduan_id']) ? $notif['pengaduan_id'] : 0;
+                            ?>
+                                <div class="notif-item <?= $notif['status'] == 'baru' ? 'unread' : '' ?>" 
+                                    onclick="showNotifDetail(<?= $notif['id'] ?>, '<?= htmlspecialchars(addslashes($notif['pesan'])) ?>', '<?= date('d/m/Y H:i', strtotime($notif['tanggal'])) ?>', <?= $pengaduan_id ?>)">
+                                    <p><?= htmlspecialchars($notif['pesan']) ?></p>
+                                    <small><i class="fa-regular fa-clock"></i> <?= date('d/m/Y H:i', strtotime($notif['tanggal'])) ?></small>
+                                </div>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <div class="notif-empty">
+                                <i class="fa-solid fa-bell-slash"></i>
+                                <p>Tidak ada notifikasi baru</p>
                             </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <div class="notif-empty">
-                            <i class="fa-solid fa-bell-slash"></i>
-                            <p>Tidak ada notifikasi baru</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                        <?php endif; ?>
+                    </div>
             </div>
             
             <a href="profile.php" style="text-decoration: none;">
@@ -220,6 +222,49 @@ document.addEventListener('click', function(event) {
         dropdown.classList.remove('show');
     }
 });
+
+// Tampilkan detail notifikasi dengan tombol untuk lihat pengaduan
+function showNotifDetail(notifId, pesan, tanggal, pengaduanId) {
+    document.getElementById('notifDetailTime').textContent = tanggal;
+    document.getElementById('notifDetailMessage').textContent = pesan;
+    
+    // Update tombol footer
+    const footer = document.querySelector('.notif-modal-footer');
+    if(pengaduanId && pengaduanId > 0) {
+        footer.innerHTML = `
+            <button class="btn-view-pengaduan" onclick="viewPengaduan(${notifId}, ${pengaduanId})">
+                <i class="fa-solid fa-eye"></i> Lihat Pengaduan
+            </button>
+            <button class="btn-close-modal" onclick="closeNotifModal()">
+                <i class="fa-solid fa-times"></i> Tutup
+            </button>
+        `;
+    } else {
+        footer.innerHTML = `
+            <button class="btn-close-modal" onclick="closeNotifModal()">
+                <i class="fa-solid fa-times"></i> Tutup
+            </button>
+        `;
+    }
+    
+    document.getElementById('notifModal').style.display = 'block';
+    
+    // Tandai sebagai sudah dibaca
+    markAsRead(notifId);
+    
+    // Tutup dropdown notifikasi
+    document.getElementById('notifDropdown').classList.remove('show');
+}
+
+// Fungsi untuk melihat detail pengaduan
+function viewPengaduan(notifId, pengaduanId) {
+    window.location.href = 'mark_notif_read.php?id=' + notifId;
+}
+
+// Fungsi sederhana: langsung redirect
+function redirectToNotif(notifId) {
+    window.location.href = 'mark_notif_read.php?id=' + notifId;
+}
 
 // Tandai semua notifikasi sudah dibaca
 function markAllRead(event) {
