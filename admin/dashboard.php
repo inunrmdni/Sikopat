@@ -107,7 +107,7 @@ $list_query = mysqli_query($koneksi, "SELECT * FROM notifikasi ORDER BY tanggal 
             <div class="notif-dropdown" id="notifDropdown">
                 <div class="notif-header">
                     <h4><i class="fa-solid fa-bell"></i> Notifikasi</h4>
-                    <a href="#" class="mark-read" onclick="markAllRead(event)">Tandai sudah dibaca</a>
+                    <a href="../admin/read.php" class="mark-read" onclick="markAllRead(event)">Tandai sudah dibaca</a>
                 </div>
                     <div class="notif-body">
                         <?php if($total_notif > 0): ?>
